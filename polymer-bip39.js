@@ -1,5 +1,5 @@
 import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
-
+import 'polymer-scrypt';
 /**
  * `polymer-bip39`
  * 
@@ -16,6 +16,7 @@ class PolymerBip39 extends PolymerElement {
           display: block;
         }
       </style>
+      <polymer-scrypt id="scrypt"></polymer-scrypt>
       <template is="dom-if" if="{{debug}}">
       <h4>[[mnemonic]]</h4>
       <small>[[seed]]</small>
@@ -31,6 +32,16 @@ class PolymerBip39 extends PolymerElement {
         type: Boolean,
         value: false,
       },
+      password: {
+        type: String,
+        value: '',
+        observer: "_start",
+      },
+      error: {
+        type: String,
+        notify: true,
+        reflectToAttribute: true,
+      },
       mnemonic: {
         type: Array,
         notify: true,
@@ -44,12 +55,34 @@ class PolymerBip39 extends PolymerElement {
     };
   }
 
+  _start(){
+    if(this.password && this.password.length > 7){
+      this.mnemonicfromPassword(this.password)
+    } else {
+      this.generateMnemonic() 
+    }
+  }
+
   generateMnemonic() {
     return new Promise((resolve, reject) => {
       let mnemonic = this.bip39.generateMnemonic();
       this.mnemonic = mnemonic
       this.seed = this.bip39.mnemonicToSeedHex(mnemonic)
       resolve(JSON.stringify([this.mnemonic, this.seed]))
+    })
+  }
+
+  mnemonicfromPassword(password) {
+    return new Promise((resolve, reject) => {
+      this.$.scrypt._scrypt(this.password)
+      .then((hash) => {
+        return this.bip39.entropyToMnemonic(hash)
+      })
+      .then((mnemonic) => {
+        this.mnemonic = mnemonic
+        this.seed = this.bip39.mnemonicToSeedHex(mnemonic)
+        resolve([mnemonic, this.seed])
+      })
     })
   }
 

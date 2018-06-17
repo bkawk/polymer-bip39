@@ -6,7 +6,8 @@
   "repository": "https://github.com/bkawk/polymer-bip39",
   "main": "polymer-bip39.js",
   "dependencies": {
-    "@polymer/polymer": "^3.0.0"
+    "@polymer/polymer": "^3.0.0",
+    "polymer-scrypt": "^1.0.0"
   },
   "devDependencies": {
     "@polymer/iron-demo-helpers": "^3.0.0-pre.19",
