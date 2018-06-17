@@ -74,14 +74,14 @@ class PolymerBip39 extends PolymerElement {
 
   mnemonicfromPassword(password) {
     return new Promise((resolve, reject) => {
-      this.$.scrypt._scrypt(this.password)
+      this.$.scrypt._scrypt(password)
       .then((hash) => {
         return this.bip39.entropyToMnemonic(hash)
       })
       .then((mnemonic) => {
         this.mnemonic = mnemonic
         this.seed = this.bip39.mnemonicToSeedHex(mnemonic)
-        resolve([mnemonic, this.seed])
+        resolve(JSON.stringify([mnemonic, this.seed]))
       })
     })
   }
